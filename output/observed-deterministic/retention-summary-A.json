@@ -1,0 +1,34 @@
+{
+  "record_id": "retention-summary-A",
+  "record_type": "observed_deterministic",
+  "run_date": "2026-11-13",
+  "dataset": "synthetic-five-programs-2026-09-to-11",
+  "fixture_sha256": "e8ff0e4a0fc815a91aef92690724f4f82756fe6e689781c625408c2829dc20ce",
+  "llm_called": false,
+  "input": {
+    "program_code": "DEMO-SWIM-A",
+    "base_month": "2026-10",
+    "target_month": "2026-11"
+  },
+  "result": {
+    "source": "mock",
+    "dataset_as_of": "2026-11-12T09:00:00+09:00",
+    "is_provisional": true,
+    "program": {
+      "program_code": "DEMO-SWIM-A",
+      "program_name": "A강습 · 가상 수영 기초"
+    },
+    "base_month": "2026-10",
+    "target_month": "2026-11",
+    "base_count": 8,
+    "retained_count": 6,
+    "not_retained_count": 2,
+    "new_registration_count": 4,
+    "continuous_registration_count": 2,
+    "retention_rate": 75.0,
+    "definition": "전월 유효 등록 회원 중 다음 달에도 동일 강습에 유효 등록이 있는 회원 비율"
+  },
+  "limits": [
+    "Actual function execution on synthetic fixtures; not an LLM accuracy measurement or customer outcome."
+  ]
+}

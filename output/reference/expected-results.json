@@ -1,0 +1,24 @@
+{
+  "record_type": "reference",
+  "synthetic": true,
+  "periods": {
+    "previous": "2026-09 -> 2026-10",
+    "current": "2026-10 -> 2026-11"
+  },
+  "summary_A": {
+    "base_count": 8,
+    "retained_count": 6,
+    "not_retained_count": 2,
+    "retention_rate": 75
+  },
+  "trend_changes_pp": {
+    "DEMO-SWIM-D": -50,
+    "DEMO-SWIM-A": -5,
+    "DEMO-SWIM-C": 0,
+    "DEMO-SWIM-E": 50,
+    "DEMO-SWIM-B": null
+  },
+  "declined_count": 2,
+  "not_calculable_count": 1,
+  "statement": "Expected values are reference assertions, not additional observed model runs."
+}

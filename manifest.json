@@ -1,0 +1,26 @@
+{
+  "record_type": "artifact_manifest",
+  "files": {
+    ".gitignore": "3fc176d4268c4f61b29840f01ffcdd08de99b3cef8253c5df22790a4d65de9c6",
+    "AGENTS.md": "94da668266af312c4ea54b78572ad791e0216d7240744e859a1c1b16e456b6e4",
+    "README.md": "a07d957e7af2f9489aa27c3365faad0670b70d74b44cbf5efc3769d5b49cf9d8",
+    "SECURITY.md": "3c8b96c1b4aa92f82fbcf1b21b99efe348068fea5722812615176635c28f5fc2",
+    "docs/architecture.md": "8bc2f869e3e8632cc4e33b1d28668ad5b8df13f9c2363c095c2226e9a876348f",
+    "docs/decisions-and-tradeoffs.md": "a224f99e7d94ac480080b645cd995fa62d58062a8b80a4f7b9814eb1a1790864",
+    "docs/evaluation-and-limitations.md": "595d16b6579395831be5fee60cf72deeca26cabc5c564859f1402d02b144fb9c",
+    "docs/problem-and-scope.md": "65c31691ff4b7572068788f123f0631c8a2e4756df2d71b9f51b9d01aa948971",
+    "docs/tool-design.md": "90f833f4b4e857622570dc5f62becf8466bde6d2e5be33b389c29831e8bcc5e1",
+    "docs/tool-schemas.json": "4809c2175ea3b7d69523ef4a26be74d57d68c0b40b757d88cbc74a16794b533a",
+    "output/README.md": "2ced2291f443155b56178a7a7b100c1552236eac64153f3faf6834e97fa779fb",
+    "output/observed-deterministic/checks.json": "0f88a4682d7bb51010e490894b0e28564d06e36b42583fc0f31d9991c7250fa2",
+    "output/observed-deterministic/retention-declines.csv": "d3766a0fe60a596db3580ca62047806095a45106501b44cd8d09bd3817cea1ed",
+    "output/observed-deterministic/retention-declines.json": "393ff02665d0b7df6b4a0ba377841aeace66606cea72a81b7faaff9a2b2c1d59",
+    "output/observed-deterministic/retention-summary-A.json": "04a0978b22e33ab5c2faab6406e34c117e14706e2b2386acf3f674aa64815bbf",
+    "output/observed/llm-run-001.json": "3aac9e04a5e87cc9d425d03fbf79004935a78290de30a4545bef284e3c303537",
+    "output/reference/eligible-cohorts.json": "7aae940e332d23a0b8150152d6a6ba1871578520c5186e6e6fa7927265783047",
+    "output/reference/expected-results.json": "ff9dc6ce5f549a3559c03e4aad54efc4587f98fbc1ab0beae416a121f125184f",
+    "output/simulated/comparison-ui.jpg": "2b3518edd95a109c08ee82050fd1cb006a53ca5e87b02827917464a3777fe442",
+    "output/simulated/provenance.json": "8cda15114dd17c6656a9dcfc51245c9db62583c099c7efbb1b99cbf34db8c084"
+  },
+  "note": "Hashes identify these documentation/output files; not proof of independent reproducibility or organizational permission."
+}

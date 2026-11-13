@@ -1,0 +1,6 @@
+program_code,previous_base_count,previous_retained_count,current_base_count,current_retained_count,previous_rate_pct,current_rate_pct,change_pp,status
+DEMO-SWIM-D,4,4,4,2,100.0,50.0,-50.0,declined
+DEMO-SWIM-A,10,8,8,6,80.0,75.0,-5.0,declined
+DEMO-SWIM-C,4,4,4,4,100.0,100.0,0.0,unchanged
+DEMO-SWIM-E,4,2,2,2,50.0,100.0,50.0,increased
+DEMO-SWIM-B,2,0,0,0,0.0,,,not_calculable
