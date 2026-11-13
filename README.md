@@ -1,42 +1,96 @@
-# 자연어로 강습 유지율을 분석하는 업무 어시스턴트
+# 합성 데이터 전용 강습 업무 AI 실험
 
-자연어 요청을 어떤 Tool로 처리하고, 모델의 판단과 코드의 검증·계산을 어떻게 나눌지 실험한 문서 중심 사례 연구입니다. 실행 앱 소스와 특정 업무 시스템의 연동 계약 대신, 설계 근거와 합성 데이터 기반 `output/`을 공유하는 저장소입니다.
+현재 버전은 업무 API·로그인 API·DB를 호출하지 않습니다. 직접 만든 합성 데이터와 가정한 업무 응답만 사용하고, 로컬 모델이 자연어를 해석해 허용 Tool을 선택합니다.
 
-## 먼저 볼 내용
+## 새 Windows PC 준비
 
-1. [문제와 범위](docs/problem-and-scope.md): 어떤 업무를 보조하며 무엇을 검증하려 했는가.
-2. [Tool 설계](docs/tool-design.md): 제공할4개 기능, 인자·검증·반환 경계.
-3. [구조와 데이터 흐름](docs/architecture.md): 모델이 선택하고 코드가 계산하는 과정.
-4. [기술 선택과 트레이드오프](docs/decisions-and-tradeoffs.md): 정해진 기능·자연어·순차 호출을 선택한 이유.
-5. [평가와 한계](docs/evaluation-and-limitations.md): 관찰한 것과 아직 입증하지 못한 것.
-6. [결과 자료](output/README.md): 실제 모델 실행, 계산 결과, 기대값과 모의 화면의 출처 구분.
+아래 명령은 프로젝트 폴더의 PowerShell에서 실행합니다. Windows용 실행 스크립트를 제공합니다. 현재 검증된 환경은 Python3.14이며 다른 버전·OS의 동일 실행을 보증하지 않습니다. 필요한 소프트웨어를 설치할 권한과 모델 사용 조건을 먼저 확인하세요.
 
-## 제공할 Tool
+### 1. Python 환경
 
-| Tool | 목적 | 모델에 돌려주는 내용 |
-| --- | --- | --- |
-| `read_programs` | 이름·코드로 강습 찾기 | 강습 카탈로그 미리보기와 전체 건수 |
-| `read_retention_summary` | 한 강습의 다음 달 유지율 | 기준/유지 인원과 비율 |
-| `show_retention_members` | 유지·미유지 대상 명단 표시 | 집계와 명단 건수만; 행은 로컬 화면 표시 |
-| `read_retention_declines` | 직전 구간 대비 유지율 하락 비교 | 전체 분석 건수·하락 건수와 집계 미리보기 |
+Python3.14와 Windows Python Launcher를 설치한 뒤 새 PowerShell을 엽니다. `py -3.14 --version`으로 확인합니다. Launcher가 없다면 해당 버전의 `python`으로 아래 첫 명령을 실행합니다.
 
-[기계 판독 가능한 데모 Tool 스키마](docs/tool-schemas.json)도 포함합니다. 이 계약은 합성 데모 전용이며 특정 회사 API의 필드·경로·응답 매핑표가 아닙니다.
+```powershell
+py -3.14 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements-lock.txt
+.\.venv\Scripts\python.exe -c "import fastapi, uvicorn, pydantic; print('dependencies ready')"
+```
 
-## 관찰한 결과
+가상환경 activate는 필요하지 않습니다. 설치는 PyPI 네트워크 접근이 필요하며 스크립트가 자동 설치하지 않습니다. lock은 이 프로젝트에서 확인한 버전을 고정한 목록이며 취약점/라이선스 감사 결과가 아닙니다.
 
-- [새 실제 로컬 모델 관찰1건](output/observed/llm-run-001.json): `qwen3:4b-instruct`가 하락 분석 Tool을 선택. 합성5강습 중 하락2개, 전체 요청 89.9초, 모델 2회. 로컬 런타임이 보고한 입력 4028 / 출력 215토큰.
-- [모델 없는 계산·검증10건](output/observed-deterministic/checks.json): 기재한 기대값과 실제값10건 일치. A강습8명 중6명 유지=75%, 분모0은 산출 불가.
-- [합성 비교 표](output/observed-deterministic/retention-declines.csv): D −50%p, A −5%p, C 0%p, E +50%p, B 산출 불가.
-- [모의 UI 화면](output/simulated/comparison-ui.jpg): 합성 데이터와 모의 모델 선택으로 확인한 화면. 실제 모델 호출 증거는 위 JSON과 구분합니다.
+### 2. 로컬 Ollama와 모델
 
-관찰1회는 정확도·평균 성능·운영 안정성·실제 업무 시간 개선율이 아닙니다. 이번 실제 모델 사례에서는 Tool1종 선택만 관찰했으며 여러 Tool의 자율적인 후속 선택 성공률은 측정하지 않았습니다.
+[Ollama Windows 공식 안내](https://docs.ollama.com/windows)에 따라 설치하고 PowerShell을 다시 엽니다. 표준 설치는 사용자 PATH에 명령을 추가하고 로컬 서버를 실행합니다. [모델 페이지](https://ollama.com/library/qwen3:4b-instruct)를 확인한 뒤:
 
-## 이 저장소의 재현 범위
+```powershell
+ollama --version
+ollama pull qwen3:4b-instruct
+```
 
-설계와 출력은 읽고 확인할 수 있고, [합성 월별 집합](output/reference/eligible-cohorts.json)으로 교집합·유지율·하락 폭을 독립적으로 계산할 수 있습니다. 실행 코드·모델 파일·전체 실행 환경을 포함하지 않으므로 같은 LLM 선택과 응답 시간을 이 저장소만으로 다시 실행할 수는 없습니다. 구현 해시는 특정 비공개 스냅샷을 식별하는 정보이며 재현성 보증이 아닙니다.
+모델 다운로드는 인터넷과 저장 공간을 사용하지만 이후 이 앱의 추론은 로컬 모델로만 수행합니다. 모델 태그는 바뀔 수 있으므로 비교 실험에는 모델 digest/런타임 버전을 함께 기록하세요.
 
-실행 가능한 Mock 앱은 공개 대상 폴더 밖에 별도 백업하여 보존합니다. 이 저장소는 설치·실행 프로젝트가 아니라 문서와 결과물로 구성합니다.
+Ollama가 실행되지 않았다면 별도 PowerShell에서 다음을 실행한 채 두고 앱을 켭니다. 이미 서버가 실행 중이면 중복 실행하지 않습니다.
 
-## 공유 경계
+```powershell
+$env:OLLAMA_HOST = '127.0.0.1:11434'
+$env:OLLAMA_NO_CLOUD = '1'
+ollama serve
+```
 
-합성 예제·일반화한 Tool/계산·측정 범위만 다룹니다. 실데이터·인증정보·사내 API 계약·DB 구조·내부 검증 문서·개인 로컬 경로·모델 내부 추론은 포함하지 않습니다. 문서와 이미지에도 [보안 검토 기준](SECURITY.md)을 적용합니다. 기술적 비식별화가 조직 장비·도구·산출물 사용과 공개 권한을 대신하지 않습니다. 이 자료는 문서와 합성 결과물로 구성합니다. 저장소의 공개 범위 변경은 별도로 확인합니다.
+이는 현재 PowerShell과 자식 프로세스에만 적용되며 전역 환경을 변경하지 않습니다. 앱이 기존 Ollama를 재사용하면 그 프로세스의 설정은 변경하지 않습니다. 기존 서버의 클라우드 설정까지 끄려면 [공식 local-only 안내](https://docs.ollama.com/faq#how-do-i-disable-ollamas-cloud-features)에 따라 서버를 다시 시작해야 합니다. 앱 코드는 고정 loopback의 로컬 모델만 요청합니다.
+
+### 3. 확인 및 실행
+
+```powershell
+.\start-local.ps1 -CheckOnly
+.\start-local.ps1
+```
+
+기본 주소는 http://127.0.0.1:8766/ 입니다. 다른 포트는 `-Port 8770`으로 지정합니다. `start.ps1`은 같은 인자를 전달하는 별칭입니다. 비밀번호/API 키를 입력하지 않으며 개발 서버 모드는 없습니다.
+
+PowerShell 실행 정책에 막히면 전역 설정을 바꾸지 않고 이번 실행에만 적용합니다.
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\start-local.ps1
+```
+
+`-CheckOnly`는 준비 상태만 확인하며 앱이나 Ollama를 새로 시작하지 않습니다. 일반 실행은 이미 실행 중인 로컬 Ollama를 먼저 사용합니다. 없으면 명시적 `-OllamaPath`, PATH, 표준 설치 위치, 호환 portable 위치 순서로 찾고 숨김 실행합니다. 모델이 없으면 자동 다운로드/대체 없이 실패합니다.
+
+Portable 또는 별도 모델 경로를 사용할 경우 실제 설치에 맞게 지정합니다. 아래는 가상 경로 예시입니다.
+
+```powershell
+.\start-local.ps1 -OllamaPath 'D:\tools\ollama\ollama.exe' -ModelDirectory 'D:\models\ollama'
+```
+
+`-ModelDirectory`는 스크립트가 Ollama를 새로 시작할 때만 적용됩니다. 이미 실행 중이면 해당 서버가 사용하는 경로에 모델을 준비해야 합니다. 스크립트가 실행한 Ollama는 앱 종료 후에도 남을 수 있으며 필요한 경우 사용자가 종료합니다. 로그는 Git제외 `.local-runtime/`에만 둡니다.
+
+## 모델 없이 계산 기능 확인
+
+아래 방식은 Ollama의 설치/실행 없이 로컬 화면과 합성 계산 API를 켭니다. 자연어 질문은 모델이 없으면 실패하며 외부 서비스로 전환하지 않습니다.
+
+```powershell
+.\.venv\Scripts\python.exe -B -m uvicorn app.main:app --host 127.0.0.1 --port 8766 --no-access-log
+Invoke-RestMethod 'http://127.0.0.1:8766/api/retention/summary?program_code=DEMO-SWIM-A&base_month=2026-10&target_month=2026-11'
+```
+
+첫 명령은 서버를 계속 실행하므로 조회 명령은 다른 PowerShell에서 실행합니다. 기대값은 `source=mock, base_count=8, retained_count=6, retention_rate=75`입니다.
+
+브라우저→로컬앱 API와 localhost Ollama HTTP 호출은 존재합니다. 업무용 API가 없다는 뜻이며 네트워크 요청 전체가0이라는 뜻은 아닙니다. 인터넷 서비스로 노출하는 배포 구성이 아닙니다.
+
+## 질문과 기대 결과
+
+- 2026년10월 A강습의11월 유지율 알려줘
+- 2026년10월 A강습 수강생 중11월 미등록 명단 보여줘
+- 2026년11월 전월보다 유지율이 하락한 강습을 찾아줘
+
+합성5강습의9/10/11월 등록내역입니다. A강습10→11월은8명 중6명75%. 직전구간 대비 변화는 D−50%p,A−5%p,C0%p,E+50%p,B산출불가입니다. 이는 재신청만의 비율과 다르며 실제 업무 효과·하락 원인을 입증하지 않습니다.
+
+계산은 코드,Tool선택은 모델 책임입니다. 회원행은 로컬표에만 표시하고 모델에는 집계/건수만 보냅니다. 요청당 모델4회·Tool6회,동시AI질문1개,자동재시도 없음입니다.
+
+## 예시 작성·공개 범위
+
+[합성 응답 기준](docs/MOCK_DATA_GUIDE.md),[응답 예시](examples/tool-responses.json),[새 Tool 틀](examples/new-tool-response-template.json)을 참고합니다. 실제 API는 권한내에서 업무 의미만 참고하고 실제응답/값/경로/매핑/내부구조를 복사하지 않습니다.
+
+[공개 파일 기준](docs/PUBLICATION.md)에 따라 정확히 검토한 파일만 Git허용 목록에 둡니다. 내부검증 기록·장비/도구 사용 및 승인 증거는 비공개로 남깁니다. 새 예시/코드도 자동 허용하지 않고 파일·출처·비밀값을 검토한 뒤 목록을 갱신합니다.
+
+[SECURITY.md](SECURITY.md)를 적용합니다. 현재Mock 전용 동작은 과거 전체 작업이Mock이었다거나 조직사용/공개가 승인되었다는 뜻이 아닙니다. Git 변경·외부 공유는 명시적으로 요청된 범위에서만 수행합니다. 공개 파일은 검토한 Mock 코드와 합성 예시로 한정합니다.

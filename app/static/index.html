@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>강습 재등록 업무 어시스턴트</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand"><span class="logo">S</span><div>SPORTS OPS<small>관리자 업무 어시스턴트</small></div></div>
+    <div class="nav-label">WORKSPACE</div>
+    <div class="nav-current">↗ 강습 재등록 분석</div>
+    <div class="scope"><span id="scope-pill" class="pill">합성 데이터</span><h2>작게 시작하고,<br>근거로 확인합니다.</h2><p id="scope-description">2026년 9월 → 10월 → 11월<br>합성 강습만 비교합니다.<br>업무 API 호출 없음.</p></div>
+    <div class="sidebar-bottom"><p>조회 전용 · 로컬 실험</p><a href="/docs" target="_blank" rel="noopener">API 문서 열기 ↗</a></div>
+  </aside>
+  <main>
+    <header><span>업무 지원 / 강습 운영</span><span id="connection" class="connection">연결 확인 중</span></header>
+    <section class="intro"><p class="eyebrow">RETENTION ASSISTANT</p><h1>다음 달에도 함께하는<br>수강생을 확인하세요.</h1><p>강습과 월을 말하면 유지율·하락 폭을 비교하고, 필요한 명단을 로컬 화면에 보여드립니다.</p></section>
+    <section class="card question-card" aria-labelledby="question-title">
+      <div class="section-heading"><h2 id="question-title">무엇을 확인할까요?</h2><button id="reset" class="text-button" type="button">조회 조건 초기화</button></div>
+      <div class="examples"><button type="button" data-example="2026년 10월 A강습의 11월 재등록률 알려줘">A강습 재등록률 ↗</button><button type="button" data-example="2026년 10월 A강습 수강생 중 11월 미재등록 명단 보여줘">미재등록 명단 ↗</button><button type="button" data-example="2026년 11월 재등록률이 전월보다 하락한 강습을 찾아줘">하락 강습 찾기 ↗</button></div>
+      <form id="chat-form">
+        <label class="sr-only" for="message">업무 질문</label>
+        <textarea id="message" maxlength="1000" rows="3" placeholder="예: 2026년 10월 A강습의 11월 재등록률과 미재등록 명단 보여줘" required></textarea>
+        <div class="form-bottom"><label class="consent"><input id="consent" type="checkbox"><span id="consent-label">연결 상태 확인 중</span></label><button id="send" class="primary" type="submit" disabled>질문하기 ↗</button></div>
+      </form>
+      <p class="privacy-note">질문에는 강습·월만 입력하세요. 회원 개인정보·API 키·토큰은 입력하지 마세요. 회원 명단은 LLM에 보내지 않습니다.</p>
+      <p id="context-label" class="context-label">이전 조회 조건 없음</p>
+    </section>
+    <div id="notice" role="status" class="notice" hidden></div>
+    <section id="setup" class="card setup" hidden><h2 id="setup-title">연결 설정이 필요합니다.</h2><p id="setup-help">프로젝트 실행 안내를 확인하세요.</p><button id="refresh-status" class="secondary" type="button">연결 상태 다시 확인</button></section>
+    <section id="answer-panel" class="card" aria-live="polite" hidden><div class="section-heading"><h2>조회 결과</h2><span class="pill">API 근거</span></div><p id="answer"></p></section>
+    <section id="metrics" class="metrics" hidden aria-label="집계 결과"><article class="metric featured"><span>동일 강습 수강 유지율</span><strong id="rate">—</strong><small>장기 등록 유지 포함</small></article><article class="metric"><span>전월 수강생</span><strong id="base-count">—</strong><small>회원 중복 제거</small></article><article class="metric"><span>다음 달 유지</span><strong id="retained-count">—</strong><small id="retained-detail"></small></article><article class="metric"><span>다음 달 등록 미확인</span><strong id="missing-count">—</strong><small>최종 이탈을 뜻하지 않음</small></article></section>
+    <section id="trend-panel" class="card" hidden aria-labelledby="trend-title"><div class="section-heading"><h2 id="trend-title">강습별 유지율 변화</h2><span id="trend-count" class="pill"></span></div><p id="trend-scope" class="privacy-note"></p><p id="trend-period" class="privacy-note"></p><div class="table-wrap"><table><thead><tr><th>강습</th><th>이전 유지율 (유지/기준)</th><th>현재 유지율 (유지/기준)</th><th>변화 (%p)</th><th>판정</th><th>후속 조회</th></tr></thead><tbody id="trend-rows"></tbody></table></div><p id="trend-definition" class="privacy-note"></p></section>
+    <section id="members-panel" class="card" hidden><div class="section-heading"><h2>대상 명단 <span id="member-total"></span></h2><select id="member-filter" aria-label="명단 상태"><option value="all">전체</option><option value="retained">유지</option><option value="not_retained">등록 미확인</option></select></div><p class="privacy-note">회원 정보는 로컬 표에만 표시됩니다. 필터·페이지 변경은 LLM을 호출하지 않습니다.</p><div class="table-wrap"><table><thead><tr><th id="member-id-heading">가상 회원번호</th><th>표시 이름</th><th>다음 달 상태</th><th>등록 구분</th></tr></thead><tbody id="member-rows"></tbody></table></div><div class="pagination"><button id="previous" type="button" class="secondary">이전</button><span id="page-label"></span><button id="next" type="button" class="secondary">다음</button></div></section>
+    <details id="trace-panel" class="card" hidden><summary>실행 과정 확인 <span id="usage"></span></summary><p class="privacy-note">허용된 Tool과 검증된 인자·결과만 표시합니다. 내부 추론 내용은 표시하지 않습니다.</p><div id="traces"></div></details>
+    <footer id="data-footer">기준 시점 2026.11.12 09:00 KST · 합성 데이터의 잠정 결과 · 실제 인증·DB 미연결</footer>
+  </main>
+</body>
+</html>

@@ -1,0 +1,36 @@
+{
+  "provenance": {
+    "synthetic": true,
+    "origin": "hand_authored",
+    "business_api_called": false,
+    "hypothesis": "여기에 일반화한 가상 업무 가정 작성"
+  },
+  "tool_name": "demo_new_read_tool",
+  "assumed_input": {
+    "demo_scope": "DEMO-ONLY"
+  },
+  "assumed_result": {
+    "count": 2,
+    "items": [
+      {
+        "demo_code": "DEMO-001",
+        "label": "합성 예시1"
+      },
+      {
+        "demo_code": "DEMO-002",
+        "label": "합성 예시2"
+      }
+    ]
+  },
+  "expected_behavior": [
+    "가상 결과만 사용",
+    "필요값이 없으면 확인 질문",
+    "실제 서버 fallback 금지"
+  ],
+  "failure_examples": [
+    {
+      "assumption": "가상 대상이 없음",
+      "expected_outcome": "명시적 실패"
+    }
+  ]
+}
